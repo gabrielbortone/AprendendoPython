@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from datetime import date, datetime
 import time
 
 def get_driver():
@@ -13,7 +14,7 @@ def get_driver():
     options.add_argument("disabled-blink-features=AutomationControlled")
 
     driver = webdriver.Chrome(options=options)
-    driver.get("http://automated.pythonanywhere.com/login/")
+    driver.get("http://automated.pythonanywhere.com")
 
     return driver
 
@@ -22,29 +23,26 @@ def clean_text(text):
     output = float(text.split(": ")[1])
     return output
 
-
-def login(driver):
-    driver.find_element(by="id", value="id_username").send_keys("automated")
-    time.sleep(2)
-    driver.find_element(by="id", value="id_password").send_keys("automatedautomated" + 
-                                                              Keys.RETURN)
-    driver.find_element(by="xpath", value="/html/body/nav/div/a").click()
-
-def get_phrase(driver):
-    element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[1]")
-    return element.text
-
 def get_temperature(driver):
     driver = get_driver()
-    time.sleep(3)
+    time.sleep(2)
     element = driver.find_element(by="xpath", value="/html/body/div[1]/div/h1[2]")
     return clean_text(element.text)
 
+def save_temperature_into_file(temperature):
+    actual_date = datetime.now()
+    date_in_text = actual_date.strftime('%d-%m-%Y-%H-%M-%S')
+    print(date_in_text)  
+
+    with open(date_in_text + ".txt", "x") as f:
+        f.write("Arquivo criado com sucesso!")
+        f.write(f"Temperature Actual is " + str(temperature))
+        f.close()
 
 def main():
     driver = get_driver()
-    login(driver)
-    print(get_phrase(driver))
-    print(get_temperature(driver))
+    while 1 == 1 :
+        actual_temperature = get_temperature(driver)
+        save_temperature_into_file(actual_temperature)
 
 print(main())
